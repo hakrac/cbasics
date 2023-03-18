@@ -1,17 +1,17 @@
 #include <stdio.h>
 
 
-unsigned long ggT(unsigned long a, unsigned long b) {
+unsigned long gcd(unsigned long a, unsigned long b) {
   if (b == 0) {
     return a;
   }
   if (a < b) {
-    return ggT(b, a);
+    return gcd(b, a);
   }
   if (a % b == 0) {
     return b;
   }
-  return ggT(b, a % b);
+  return gcd(b, a % b);
 }
 
 /*

@@ -17,7 +17,6 @@ void selectionsort(long *nums, int l) {
   }
 }
 
-
 void emptystr(char *buff) {
   int i, l = strlen(buff);
   for(i = 0; i < l;i++) {
