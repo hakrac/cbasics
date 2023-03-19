@@ -6,6 +6,8 @@
 #include <unistd.h>
 
 
+#define DEBUG 0
+
 int issolved(int x) {
     return (x != 0) && (x & (x - 1)) == 0;
 }
@@ -129,97 +131,63 @@ int sudokucheck(int** s) {
   return 1;
 }
 
+void printb(int n, int l) {
+  for(int i = l; i >= 0; i--) {
+    printf("%d", (n & (1 << i)) >> i );
+  }
+  printf("\n");
+}
+
 int solve(int **s) {
   for(int i = 0; i < 9; i++) {
     for(int j = 0; j < 9; j++) {
-      if (!issolved(s[i][j])) {
+      if(issolved(s[i][j]))
+        continue;
         
+      // rows
+      int r = 0;
+      for(int k = 0; k < 9; k++)
+        r = r ^ s[i][k];
 
+      // columns
+      int c = 0;
+      for(int k = 0; k < 9; k++)
+        c = c ^ s[k][j];
 
-        clear();
-        deconvertsudoku(s);
-        printFancySudoku(s);
-        convertsudoku(s);
-        usleep(1000);
-
-        
-        // rows
-        int r = 0;
-        for(int k = 0; k < 9; k++) {
-          if(issolved(s[i][k]))
-            r = r ^ s[i][k];
-        }
-
-        // columns
-        int c = 0;
-        for(int k = 9; k < 9; k++) {
-          if(issolved(s[k][j]))
-            c = c ^ s[k][j];
-        }
-
-        // blocks
-        int b1 = i / 3;
-        int b2 = j / 3;
-        int b = 0;
-        for(int k = 0; k < 3; k++) {
-          for(int m = 0; m < 3; m++) {
-            if( issolved(s[b1 * 3 + k][b2 * 3 + m]) )
-              b = b ^ s[b1 * 3 + k][b2 * 3 + m];
-          }
-        }
-       
-        int n = 511 ^ b ^ r ^ c; // alle mögliche lsgen.
-        if(n == 0) {
-          return 0;
-        } else if(issolved(n)) { 
-          //  printf("%d\n", n);
-          // s[i][j] = n;
-        } else { 
-          // s[i][j] = n;
-          // probieren aller lsg
-          for(int t = 0; t < 9; t++) {
-            // t-te bit von n == 1 
-            if((n & ( 1 << t )) >> t == 1) {
-              s[i][j] = 1 << t;
-              if(solve(s))
-                return 1;
-            }
-          }
-          s[i][j] = 0;
-          return 0;
+      // blocks
+      int b1 = i / 3;
+      int b2 = j / 3;
+      int b = 0;
+      for(int k = 0; k < 3; k++)
+        for(int m = 0; m < 3; m++)
+          if(issolved(s[b1 * 3 + k][b2 * 3 + m]))
+            b = b ^ s[b1 * 3 + k][b2 * 3 + m];
+      
+      int n = (b | r | c); // alle mögliche lsgen.
+      if(n == 511)
+        return 0;
+      
+      // probieren aller lsg
+      for(int t = 0; t < 9; t++) {
+        // t-te bit von n == 1
+        if( ((b | r | c) & (1 << t)) == 0) {
+          s[i][j] = 1 << t;
+          if(solve(s))
+            return 1;
         }
       }
+
+      s[i][j] = 0;
+      return 0;
     }
   }
   // ist geloest
-  return sudokucheck(s); 
+  return sudokucheck(s);
 }
 
 
-int main() {
-  /*
-  int s[9 * 9] = {
-     0, 1, 6, 5, 7, 8, 4, 9, 2,
-     5, 2, 9, 1, 3, 4, 7, 6, 8,
-     4, 8, 7, 6, 2, 9, 5, 3, 1,
-     2, 6, 3, 4, 1, 5, 9, 8, 7,
-     9, 7, 4, 8, 6, 3, 1, 2, 5,
-     8, 5, 1, 7, 9, 2, 6, 4, 3,
-     1, 3, 8, 9, 4, 7, 0, 0, 0,
-     6, 9, 2, 3, 5, 1, 0, 0, 0,
-     7, 4, 5, 2, 8, 6, 0, 0, 0
-  };
-  int *sudoku[9];
-  for(int i = 0; i < 81; i += 9) {
-    sudoku[i / 9] = &s[i];
-  }
-
-  
-  int** su = (int**)sudoku;
-  */
-  
+int main() {  
   int ** su = readSudoku();
- 
   convertsudoku(su); 
   int l = solve(su);
   if(l) {
@@ -231,4 +199,5 @@ int main() {
   deleteSudoku(su);
   return 0;
 }
+
 
