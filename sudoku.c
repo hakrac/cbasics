@@ -2,9 +2,17 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <time.h>
+#include <unistd.h>
+
 
 int issolved(int x) {
     return (x != 0) && (x & (x - 1)) == 0;
+}
+
+
+void clear() {
+  printf("\e[1;1H\e[2J"); 
 }
 
 void deconvertsudoku(int** s) {
@@ -125,16 +133,28 @@ int solve(int **s) {
   for(int i = 0; i < 9; i++) {
     for(int j = 0; j < 9; j++) {
       if (!issolved(s[i][j])) {
+        
+
+
+        clear();
+        deconvertsudoku(s);
+        printFancySudoku(s);
+        convertsudoku(s);
+        usleep(1000);
+
+        
         // rows
         int r = 0;
         for(int k = 0; k < 9; k++) {
-          r = r ^ s[i][j];
+          if(issolved(s[i][k]))
+            r = r ^ s[i][k];
         }
 
         // columns
         int c = 0;
         for(int k = 9; k < 9; k++) {
-          c = c ^ s[i][j];
+          if(issolved(s[k][j]))
+            c = c ^ s[k][j];
         }
 
         // blocks
@@ -143,16 +163,17 @@ int solve(int **s) {
         int b = 0;
         for(int k = 0; k < 3; k++) {
           for(int m = 0; m < 3; m++) {
-            b = b ^ s[b1 * 3 + k][b2 * 3 + m];
+            if( issolved(s[b1 * 3 + k][b2 * 3 + m]) )
+              b = b ^ s[b1 * 3 + k][b2 * 3 + m];
           }
         }
        
         int n = 511 ^ b ^ r ^ c; // alle mögliche lsgen.
         if(n == 0) {
           return 0;
-        //} else if(issolved(n)) {
-        //  printf("%d\n", n);
-        //  s[i][j] = n;
+        } else if(issolved(n)) { 
+          //  printf("%d\n", n);
+          // s[i][j] = n;
         } else { 
           // s[i][j] = n;
           // probieren aller lsg
@@ -196,8 +217,9 @@ int main() {
   
   int** su = (int**)sudoku;
   */
-  int ** su = readSudoku();
   
+  int ** su = readSudoku();
+ 
   convertsudoku(su); 
   int l = solve(su);
   if(l) {
