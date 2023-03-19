@@ -3,7 +3,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-
 int issolved(int x) {
     return (x != 0) && (x & (x - 1)) == 0;
 }
@@ -72,14 +71,11 @@ int **readSudoku() {
     for(int j = 0; j < 9; j++) {
       int c = -1;
       while (c < 0 || c > 9) {
-        // scanf("%d %d %d %d %d %d %d %d %d", &);
         c = getchar() - '0';
       }
       s[i][j] = c;
     } 
   }
-
-  
   return s;
 }
 
@@ -93,8 +89,6 @@ void deleteSudoku(int **s) {
 
 int sudokucheck(int** s) {
   // check if numbers in rows / columns are unique
-     
-
   for(int i = 0; i < 9;i++) {
     int c = 0;
     int r = 0;
@@ -156,8 +150,9 @@ int solve(int **s) {
         int n = 511 ^ b ^ r ^ c; // alle mögliche lsgen.
         if(n == 0) {
           return 0;
-        } else if(issolved(s[i][j])) {
-          continue;
+        //} else if(issolved(n)) {
+        //  printf("%d\n", n);
+        //  s[i][j] = n;
         } else { 
           // s[i][j] = n;
           // probieren aller lsg
@@ -165,10 +160,6 @@ int solve(int **s) {
             // t-te bit von n == 1 
             if((n & ( 1 << t )) >> t == 1) {
               s[i][j] = 1 << t;
-              // printf("%d %d:\n", i, j);
-              // deconvertsudoku(s);
-              // printFancySudoku(s);
-              // convertsudoku(s);
               if(solve(s))
                 return 1;
             }
@@ -206,19 +197,9 @@ int main() {
   int** su = (int**)sudoku;
   */
   int ** su = readSudoku();
-  // printSudoku(su);
-  // convertsudoku(su);
-  // deconvertsudoku(su);
-  // printSudoku(su);
-
- 
-  // printf("%d", su[0][0]);
-
-
+  
   convertsudoku(su); 
   int l = solve(su);
-  // printf("solved: %d\n", solve(su));
-  // printf("%d\n", sudokucheck(su));
   if(l) {
     deconvertsudoku(su);
     printSudoku(su);
