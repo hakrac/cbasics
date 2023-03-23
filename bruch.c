@@ -70,9 +70,16 @@ void bruchSubtraktion(bruch_t* bruch, bruch_t sub) {
     bruch->zaehler *= -1;
     bruch->nenner *= -1;
   }
-    
-  sub.zaehler *= -1;
-  bruchAddition(bruch, sub);
+
+  bruch->zaehler = bruch->zaehler * sub.nenner - sub.zaehler * bruch->nenner;
+  bruch->nenner *= sub.nenner;
+  if(bruch->zaehler == 0) {
+    bruch->nenner = 1;
+    bruch->zaehler = 0;
+  } else {
+    bruchKuerzen(bruch);
+  }
+
   if(bruch->nenner < 0) {
     bruch->zaehler *= -1;
     bruch->nenner *= -1;

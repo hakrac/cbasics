@@ -4,6 +4,10 @@
 
 
 int permtest( const unsigned int* p, int laenge) {
+  /*for(int i = 0; i < laenge;i++) {
+    printf("%d ", p[i]);
+  }
+  printf("l: %d\n", laenge);*/
   if(p == NULL) {
     return 0;
   }
@@ -16,6 +20,9 @@ int permtest( const unsigned int* p, int laenge) {
   }
   for(int i = 0; i < laenge;i++) {
     if(p[i] > laenge) {
+      return 0;
+    }
+    if(p[i] <= 0) {
       return 0;
     }
     if(uval[p[i] - 1] == 0) {
@@ -32,9 +39,10 @@ int permtest( const unsigned int* p, int laenge) {
   free(uval);
   return 1;
 }
-
+/*
 int main() {
-  const unsigned int p[] = {2};
+  const unsigned int p[] = {0};
   printf("%d", permtest(p, 1));
   return 0;
 }
+*/

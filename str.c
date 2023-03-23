@@ -10,6 +10,9 @@ int strendX(const char *s, const char *t) {
     return 0;
   int ls = strlen(s);
   int lt = strlen(t);
+  if(lt > ls) {
+    return 0;
+  }
   for(int i = 0; i < lt; i++) {
     if(s[ls - i - 1] != t[lt - i - 1]) {
       // printf("%c != %c", s[ls - i - 1], t[lt - i - 1]);
@@ -37,6 +40,9 @@ char *strstrX(const char *s, const char *t) {
     return NULL;
   int ls = strlen(s);
   int lt = strlen(t);
+  if(ls == 0 && lt == 0) {
+    return (char *)&s[0];
+  }
   for(int i = 0; i <= ls - lt; i++) {
     for(int j = 0; j < lt; j++) {
       if(t[j] != s[i + j]) {
@@ -49,17 +55,18 @@ char *strstrX(const char *s, const char *t) {
   }
   return NULL;
 }
-
 /*
 int main() {
-  char str[] = "Hello World!";
-  char t[] = ",";
-  char *p = strstrX(str, t);
+  char str[] = "orld!";
+  char t[] = "orld!";
+  // char *p = strendX(str, t);
+  int o = strendX(str, t);
+  printf("found: %d", o);
   if(p == NULL) {
     printf("NOT FOUND");
     return 0;
   }
-  printf("%c\n", *p);
+  printf("%s\n", p);
   return 0;
 }
 */
