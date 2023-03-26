@@ -5,6 +5,8 @@
 #include <math.h>
 
 
+int max(int **f, int** p);
+int min(int **f, int** p);
 
 void printField(int **f) {
   for(int i = 0; i < 3; i++) {
@@ -32,7 +34,19 @@ void readMove(int **f) {
   }
 }
 
+int isfull(int **f) {
+  for(int i = 0; i < 3; i++)
+    for(int j = 0; j < 3; j++)
+      if(f[i][j] == 0)
+        return 0;
+  return 1;
+}
+
+
 int check(int **f) {
+  // if(isfull(f))
+  //   return 0;
+
   for(int k = 0; k < 2; k++) {
     int i, j;
     for(i = 0; i < 3; i++) {
@@ -53,7 +67,14 @@ int check(int **f) {
   for(int k = 0; k < 2; k++) {
     int i, j;
     for(i = 0; i < 3; i++) {
-      if(f[k == 0 ? i : 2 - i][i] != (int)pow(-1, k))
+      if(f[2 - i][i] != (int)pow(-1, k))
+        break;
+    }
+    if(i == 3)
+      return (int)pow(-1, k);
+    
+    for(i = 0; i < 3; i++) {
+      if(f[i][i] != (int)pow(-1, k))
         break;
     }
     if(i == 3)
@@ -62,15 +83,72 @@ int check(int **f) {
   return 0;
 }
 
-int max() {
-  return 1;
+// maximiert spieler gewinn
+int max(int **f, int **p) {
+  int maximum = -10;
+  if(isfull(f)) {
+    *p = NULL;
+    return 0;
+  }
+  
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      if(f[i][j] == 0) {
+        f[i][j] = 1;
+     
+        if(check(f) == 1) {
+          *p = &f[i][j];
+          f[i][j] = 0;
+          return 1;
+        }
+
+        int **pos = (int **)malloc(sizeof(int *));
+        int rating = min(f, pos); 
+        free(pos);
+        if(maximum < rating) {
+          *p = &f[i][j];
+          maximum = rating;
+        }
+        
+        f[i][j] = 0; 
+      }
+    }
+  }
+  return maximum;
 }
 
-int min() {
-  return 1;
+int min(int **f, int** p) {
+  int minimum = 10;
+  if(isfull(f)) {
+    *p = NULL;
+    return 0;
+  }
+
+  for(int i = 0; i < 3; i++) {
+    for(int j = 0; j < 3; j++) {
+      if(f[i][j] == 0) {
+        f[i][j] = -1;
+        if(check(f) == -1) {
+          *p = &f[i][j];
+          f[i][j] = 0;
+          return -1;  
+        }
+       
+        int **pos = (int **)malloc(sizeof(int *));
+        int rating = max(f, pos);
+        free(pos);
+        if(minimum > rating) {
+          *p = &f[i][j];
+          minimum = rating;
+        }
+        
+        f[i][j] = 0; 
+      }
+    }
+  } 
+   
+  return minimum;
 }
-
-
 
 int main () {
   int**f = (int **)malloc(3 * sizeof(int *));
@@ -81,10 +159,41 @@ int main () {
     }
   }
 
-  while(check(f) != 1) {
+  while(check(f) == 0 && !isfull(f)) {
     readMove(f);
     printField(f);
+    if(isfull(f) && check(f) == 0) {
+      printf("=================\n"
+             "= Unentschieden =\n"
+             "=================\n");
+      break; 
+    }
+    if(check(f) == 1) {
+       printf("=================\n"
+              "= * Gewonnnen * =\n"
+              "=================\n");
+      break;  
+    }
+    printf("\n");
+    int **p = (int **)malloc(sizeof(int *));
+    int res = min(f, p);
+    **p = -1;
+    
+    
+    printField(f);
+    if(check(f) == -1) {
+       printf("=================\n"
+              "=   Verloren    =\n"
+              "=================\n");
+      break;  
+    }
     printf("\n");
   }
+ 
+  for(int i = 0; i < 3; i++) {
+    free(f[i]);
+  }
+  free(f);
+ 
   return 0;
 }
