@@ -120,7 +120,6 @@ void deleteSudoku(int **s) {
 
 
 int sudokucheck(int** s) {
-  // check if numbers in rows / columns are unique
   for(int i = 0; i < 9;i++) {
     int c = 0;
     int r = 0;
@@ -134,7 +133,6 @@ int sudokucheck(int** s) {
   }
  
 
-  // check blocks
   for(int i = 0; i < 3; i++) {
     for(int j = 0; j < 3; j++) {
       long b = 0;
