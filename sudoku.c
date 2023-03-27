@@ -1,6 +1,6 @@
 /*
 * 9 x 9 - Sudoku solver
-* https://github.com/hakrac/cbasics/sudoku.c
+* https://github.com/hakrac/cbasics
 */
 
 #include <stdio.h>
