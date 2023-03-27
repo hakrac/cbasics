@@ -1,3 +1,8 @@
+/*
+* 9 x 9 - Sudoku solver
+* https://github.com/hakrac/cbasics/sudoku.c
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -8,6 +13,12 @@
 
 #define DEBUG 0
 
+
+/*
+* Sudokuzelle ist gelöst falls Bitdarstellung eindeutig ist
+* Bsp: 110000000 -> 0
+*      000000010 -> 1
+*/
 int issolved(int x) {
     return (x != 0) && (x & (x - 1)) == 0;
 }
@@ -17,6 +28,9 @@ void clear() {
   printf("\e[1;1H\e[2J"); 
 }
 
+/* Dekonvertieren in Integer aus [1, 9]
+* Bsp: 100000000 -> 9
+*/
 void deconvertsudoku(int** s) {
   for(int i = 0; i < 9; i++) {
     for(int j = 0; j < 9; j++) {
@@ -29,6 +43,12 @@ void deconvertsudoku(int** s) {
   }
 }
 
+
+/* Konvertiert jeden Integer aus [1, 9] in Bitdarstellung
+* Bsp: 1 -> 000000001
+*      2 -> 000000010
+*      9 -> 100000000
+*/
 void convertsudoku(int** s) {
   for(int i = 0; i < 9; i++) {
     for(int j = 0; j < 9; j++) {
@@ -97,6 +117,8 @@ void deleteSudoku(int **s) {
   free(s);
 }
 
+
+
 int sudokucheck(int** s) {
   // check if numbers in rows / columns are unique
   for(int i = 0; i < 9;i++) {
@@ -144,17 +166,17 @@ int solve(int **s) {
       if(issolved(s[i][j]))
         continue;
         
-      // rows
+      // reihen
       int r = 0;
       for(int k = 0; k < 9; k++)
         r = r ^ s[i][k];
 
-      // columns
+      // zeilen
       int c = 0;
       for(int k = 0; k < 9; k++)
         c = c ^ s[k][j];
 
-      // blocks
+      // block
       int b1 = i / 3;
       int b2 = j / 3;
       int b = 0;
@@ -163,7 +185,9 @@ int solve(int **s) {
           if(issolved(s[b1 * 3 + k][b2 * 3 + m]))
             b = b ^ s[b1 * 3 + k][b2 * 3 + m];
       
-      int n = (b | r | c); // alle mögliche lsgen.
+      // Bitweises Oder überlagert b, r und c
+      // 511 enspricht 111111111 = 2^9 - 1
+      int n = (b | r | c); // alle belegten Zahlen
       if(n == 511)
         return 0;
       
@@ -177,6 +201,7 @@ int solve(int **s) {
         }
       }
 
+      // keine Lösung passt
       s[i][j] = 0;
       return 0;
     }
